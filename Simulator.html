@@ -7,7 +7,29 @@
     <style>
         body { margin: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #000; }
         canvas { display: block; }
-        #controls { position: absolute; top: 10px; left: 10px; color: white; }
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            background: linear-gradient(45deg, #ff0000, #ff7300);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 0px 10px rgba(255, 115, 0, 0.7);
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/controls/OrbitControls.js"></script>
@@ -33,6 +55,10 @@
         controls.screenSpacePanning = true;
         controls.minDistance = 2;
         controls.maxDistance = 50;
+
+        // Ambient light
+        const light = new THREE.AmbientLight(0xffffff, 1);
+        scene.add(light);
 
         // Background with moving stars
         function createStars() {
