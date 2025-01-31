@@ -29,6 +29,19 @@
         // Camera controls
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
+        // Background with moving stars
+        const starGeometry = new THREE.BufferGeometry();
+        const starVertices = [];
+        for (let i = 0; i < 6000; i++) {
+            starVertices.push((Math.random() - 0.5) * 2000);
+            starVertices.push((Math.random() - 0.5) * 2000);
+            starVertices.push((Math.random() - 0.5) * 2000);
+        }
+        starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+        const starMaterial = new THREE.PointsMaterial({ color: 0xffffff });
+        const stars = new THREE.Points(starGeometry, starMaterial);
+        scene.add(stars);
+
         // Nucleus
         const nucleusMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
         const neutronMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
@@ -72,6 +85,7 @@
                 electron.mesh.position.x = radius * Math.cos(electron.angle);
                 electron.mesh.position.z = radius * Math.sin(electron.angle);
             });
+            stars.rotation.y += 0.0005; // Slow star movement
             controls.update();
             renderer.render(scene, camera);
         }
