@@ -7,10 +7,17 @@
     <style>
         body { margin: 0; overflow: hidden; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #000; }
         canvas { display: block; }
+        #controls { position: absolute; top: 10px; left: 10px; color: white; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
+    <div id="controls">
+        <button onclick="addProton()">Add Proton</button>
+        <button onclick="addNeutron()">Add Neutron</button>
+        <button onclick="addElectron()">Add Electron</button>
+    </div>
     <script>
         // Scene setup
         const scene = new THREE.Scene();
@@ -19,23 +26,40 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
+        // Camera controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
         // Nucleus
-        const nucleusGeometry = new THREE.SphereGeometry(1, 32, 32);
         const nucleusMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-        const nucleus = new THREE.Mesh(nucleusGeometry, nucleusMaterial);
-        scene.add(nucleus);
+        const neutronMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
+        let nucleusParticles = [];
+
+        function addProton() {
+            const protonGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+            const proton = new THREE.Mesh(protonGeometry, nucleusMaterial);
+            proton.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+            scene.add(proton);
+            nucleusParticles.push(proton);
+        }
+
+        function addNeutron() {
+            const neutronGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+            const neutron = new THREE.Mesh(neutronGeometry, neutronMaterial);
+            neutron.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5);
+            scene.add(neutron);
+            nucleusParticles.push(neutron);
+        }
 
         // Electrons
         const electronMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
         let electrons = [];
-        const electronCount = 4;
         const radius = 5;
 
-        for (let i = 0; i < electronCount; i++) {
+        function addElectron() {
             const electronGeometry = new THREE.SphereGeometry(0.2, 16, 16);
             const electron = new THREE.Mesh(electronGeometry, electronMaterial);
             scene.add(electron);
-            electrons.push({ mesh: electron, angle: (i / electronCount) * Math.PI * 2 });
+            electrons.push({ mesh: electron, angle: Math.random() * Math.PI * 2 });
         }
 
         camera.position.z = 10;
@@ -48,6 +72,7 @@
                 electron.mesh.position.x = radius * Math.cos(electron.angle);
                 electron.mesh.position.z = radius * Math.sin(electron.angle);
             });
+            controls.update();
             renderer.render(scene, camera);
         }
         animate();
