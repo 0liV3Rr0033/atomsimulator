@@ -8,6 +8,8 @@
         body {
             text-align: center;
             font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
+            color: white;
         }
         .loading-screen {
             position: fixed;
@@ -15,7 +17,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: white;
+            background: black;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -26,7 +28,7 @@
             width: 50px;
             height: 50px;
             border: 5px solid lightgray;
-            border-top: 5px solid black;
+            border-top: 5px solid white;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -43,15 +45,16 @@
             display: none;
         }
         .nucleus {
-            width: 100px;
-            height: 100px;
-            background-color: yellow;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, yellow, orange);
             border-radius: 50%;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             position: relative;
+            box-shadow: 0px 0px 20px rgba(255, 255, 0, 0.8);
         }
         .particle {
             width: 20px;
@@ -60,13 +63,26 @@
             display: inline-block;
             position: absolute;
         }
-        .proton { background-color: red; }
-        .neutron { background-color: blue; }
-        .electron { background-color: green; }
+        .proton { background-color: red; box-shadow: 0px 0px 10px red; }
+        .neutron { background-color: blue; box-shadow: 0px 0px 10px blue; }
+        .electron {
+            background-color: green;
+            box-shadow: 0px 0px 10px green;
+            animation: orbit 3s linear infinite;
+        }
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(80px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
+        }
         .controls button {
             margin: 5px;
             padding: 10px;
             cursor: pointer;
+            background: #222;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px white;
         }
     </style>
 </head>
@@ -108,11 +124,13 @@
         }
 
         function addElectron() {
-            const body = document.body;
+            const body = document.getElementById('main-container');
             const electron = document.createElement('div');
             electron.classList.add('particle', 'electron');
-            electron.style.left = Math.random() * window.innerWidth + 'px';
-            electron.style.top = Math.random() * window.innerHeight + 'px';
+            electron.style.position = 'absolute';
+            electron.style.left = '50%';
+            electron.style.top = '50%';
+            electron.style.transformOrigin = 'center';
             body.appendChild(electron);
         }
 
