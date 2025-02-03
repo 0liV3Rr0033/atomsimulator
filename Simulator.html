@@ -114,6 +114,8 @@
     </div>
     <script>
         let protonCount = 0;
+        let neutronCount = 0;
+        let electronCount = 0;
         const elements = ["Unknown", "Hydrogen", "Helium", "Lithium", "Beryllium", "Boron", "Carbon", "Nitrogen", "Oxygen", "Fluorine", "Neon", "Sodium", "Magnesium", "Aluminum", "Silicon", "Phosphorus", "Sulfur", "Chlorine", "Argon", "Potassium", "Calcium", "Scandium", "Titanium", "Vanadium", "Chromium", "Manganese", "Iron", "Cobalt", "Nickel", "Copper", "Zinc", "Gallium", "Germanium", "Arsenic", "Selenium", "Bromine", "Krypton", "Rubidium", "Strontium", "Yttrium", "Zirconium", "Niobium", "Molybdenum", "Technetium", "Ruthenium", "Rhodium", "Palladium", "Silver", "Cadmium", "Indium", "Tin", "Antimony", "Tellurium", "Iodine", "Xenon", "Cesium", "Barium", "Lanthanum", "Cerium", "Praseodymium", "Neodymium", "Promethium", "Samarium", "Europium", "Gadolinium", "Terbium", "Dysprosium", "Holmium", "Erbium", "Thulium", "Ytterbium", "Lutetium", "Hafnium", "Tantalum", "Tungsten", "Rhenium", "Osmium", "Iridium", "Platinum", "Gold", "Mercury", "Thallium", "Lead", "Bismuth", "Polonium", "Astatine", "Radon", "Francium", "Radium", "Actinium", "Thorium", "Protactinium", "Uranium", "Neptunium", "Plutonium", "Americium", "Curium", "Berkelium", "Californium", "Einsteinium", "Fermium", "Mendelevium", "Nobelium", "Lawrencium", "Rutherfordium", "Dubnium", "Seaborgium", "Bohrium", "Hassium", "Meitnerium", "Darmstadtium", "Roentgenium", "Copernicium", "Nihonium", "Flerovium", "Moscovium", "Livermorium", "Tennessine", "Oganesson"];
         
         function hideLoading() {
@@ -122,8 +124,35 @@
         }
 
         function addParticle(type) {
-            if (type === 'proton') protonCount++;
-            document.getElementById('element-name').innerText = "Element: " + (elements[protonCount] || "Unknown");
+            const nucleus = document.getElementById('nucleus');
+            if (type === 'proton') {
+                protonCount++;
+                let proton = document.createElement('div');
+                proton.classList.add('particle', 'proton');
+                let angle = (360 / protonCount) * (protonCount - 1);
+                proton.style.transform = `rotate(${angle}deg) translateX(40px)`;
+                nucleus.appendChild(proton);
+            } else if (type === 'neutron') {
+                neutronCount++;
+                let neutron = document.createElement('div');
+                neutron.classList.add('particle', 'neutron');
+                let angle = (360 / neutronCount) * (neutronCount - 1);
+                neutron.style.transform = `rotate(${angle}deg) translateX(40px)`;
+                nucleus.appendChild(neutron);
+            }
+
+            // Update element name
+            let element = elements[protonCount] || "Unknown";
+            document.getElementById('element-name').innerText = `Element: ${element}`;
+        }
+
+        function addElectron() {
+            electronCount++;
+            let electron = document.createElement('div');
+            electron.classList.add('particle', 'electron');
+            let angle = (360 / electronCount) * (electronCount - 1);
+            electron.style.transform = `rotate(${angle}deg) translateX(80px)`;
+            document.getElementById('nucleus').appendChild(electron);
         }
     </script>
 </body>
