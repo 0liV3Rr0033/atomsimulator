@@ -3,22 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Screen Embed</title>
+    <title>Atom Builder</title>
     <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
         }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .nucleus {
+            width: 100px;
+            height: 100px;
+            background-color: yellow;
+            border-radius: 50%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .particle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            position: absolute;
+        }
+        .proton { background-color: red; }
+        .neutron { background-color: blue; }
+        .electron { background-color: green; }
+        .controls button {
+            margin: 5px;
+            padding: 10px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <iframe src="https://phet.colorado.edu/sims/html/build-an-atom/latest/build-an-atom_all.html" allowfullscreen></iframe>
+    <div class="container">
+        <h1>Atom Builder</h1>
+        <div class="nucleus" id="nucleus"></div>
+        <div class="controls">
+            <button onclick="addParticle('proton')">Add Proton</button>
+            <button onclick="addParticle('neutron')">Add Neutron</button>
+            <button onclick="addElectron()">Add Electron</button>
+        </div>
+    </div>
+    <script>
+        function addParticle(type) {
+            const nucleus = document.getElementById('nucleus');
+            const particle = document.createElement('div');
+            particle.classList.add('particle', type);
+            particle.style.left = Math.random() * 80 + 'px';
+            particle.style.top = Math.random() * 80 + 'px';
+            nucleus.appendChild(particle);
+        }
+
+        function addElectron() {
+            const body = document.body;
+            const electron = document.createElement('div');
+            electron.classList.add('particle', 'electron');
+            electron.style.left = Math.random() * window.innerWidth + 'px';
+            electron.style.top = Math.random() * window.innerHeight + 'px';
+            body.appendChild(electron);
+        }
+    </script>
 </body>
 </html>
