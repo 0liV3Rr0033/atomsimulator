@@ -46,6 +46,7 @@
             top: 20px;
             left: 20px;
             z-index: 10;
+            display: none;
         }
         .element-name {
             position: absolute;
@@ -54,6 +55,7 @@
             color: white;
             font-size: 24px;
             font-family: Arial, sans-serif;
+            display: none;
         }
         button {
             margin: 5px;
@@ -71,16 +73,22 @@
         <div class="logo">OA LAB</div>
         <div class="spinner"></div>
     </div>
-    <div class="controls" id="main-container" style="display: none;">
+    <div class="controls" id="main-container">
         <button onclick="addProton()">Add Proton</button>
         <button onclick="addNeutron()">Add Neutron</button>
         <button onclick="addElectron()">Add Electron</button>
+        <button onclick="restart()">Restart</button>
     </div>
     <div class="element-name" id="element-name">Element: Unknown</div>
     <script>
         function hideLoading() {
             document.getElementById('loading-screen').style.display = 'none';
             document.getElementById('main-container').style.display = 'block';
+            document.getElementById('element-name').style.display = 'block';
+        }
+
+        function restart() {
+            location.reload();
         }
 
         const scene = new THREE.Scene();
