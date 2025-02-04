@@ -4,7 +4,7 @@ To open the simulation please click on the link below
 <a href="https://0liv3rr0033.github.io/atomsimulator/Simulator.html">
   <button>OPEN ATOM SIMULATOR
 
-    ```html
+```html```
 <!DOCTYPE html>
 <html lang="en">
 <head>
