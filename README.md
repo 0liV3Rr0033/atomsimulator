@@ -3,8 +3,9 @@ To open the simulation please click on the link below
 
 <a href="https://0liv3rr0033.github.io/atomsimulator/Simulator.html">
   <button>OPEN ADOM SIMULATOR
-<styles>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+    
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
 body {
     font-family: 'Orbitron', sans-serif;
@@ -33,7 +34,7 @@ body {
     background: url('https://www.transparenttextures.com/patterns/stardust.png'), black;
     animation: moveStars 50s linear infinite;
 }
-</styles>
+</style>
 
 @2025, All Rights Reseved |
 Created By: Oliver Zen Anthony
