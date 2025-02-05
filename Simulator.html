@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Accurate Atom Builder</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>Atom Builder</title>
     <style>
-        body { margin: 0; overflow: hidden; background: radial-gradient(circle, #0a0a30, #000010); display: flex; }
-        canvas { display: block; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+        
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
+            color: white;
+        }
         .loading-screen {
             position: fixed;
             top: 0;
@@ -20,152 +25,134 @@
             align-items: center;
             flex-direction: column;
             font-size: 24px;
-            color: cyan;
-            font-family: 'Orbitron', sans-serif;
-            z-index: 10;
         }
         .logo {
+            font-family: 'Orbitron', sans-serif;
             font-size: 50px;
             font-weight: bold;
+            color: cyan;
             text-shadow: 0 0 20px cyan;
             margin-bottom: 20px;
         }
-        .info-panel {
-            width: 50%;
-            background: rgba(0, 0, 20, 0.9);
-            color: white;
-            padding: 20px;
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: 100%;
-            overflow-y: auto;
-            font-family: 'Orbitron', sans-serif;
-        }
-        .trash-can {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
+        .spinner {
             width: 50px;
             height: 50px;
-            background: red;
-            text-align: center;
-            color: white;
-            line-height: 50px;
+            border: 5px solid lightgray;
+            border-top: 5px solid white;
             border-radius: 50%;
-            font-weight: bold;
-            cursor: pointer;
+            animation: spin 1s linear infinite;
         }
-        button {
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            display: none;
+        }
+        .nucleus {
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, yellow, orange);
+            border-radius: 50%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0px 0px 20px rgba(255, 255, 0, 0.8);
+        }
+        .particle {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+            position: absolute;
+        }
+        .proton { background-color: red; box-shadow: 0px 0px 10px red; }
+        .neutron { background-color: blue; box-shadow: 0px 0px 10px blue; }
+        .electron {
+            background-color: green;
+            box-shadow: 0px 0px 10px green;
+            animation: orbit 3s linear infinite;
+        }
+        @keyframes orbit {
+            0% { transform: rotate(0deg) translateX(80px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(80px) rotate(-360deg); }
+        }
+        .controls button {
             margin: 5px;
             padding: 10px;
+            cursor: pointer;
             background: #222;
             color: white;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
+            box-shadow: 0px 0px 5px white;
         }
     </style>
 </head>
-<body>
+<body onload="setTimeout(hideLoading, 2000)">
     <div class="loading-screen" id="loading-screen">
         <div class="logo">OA LAB</div>
         <div class="spinner"></div>
     </div>
+    <div class="container" id="main-container">
+        <h1>Atom Builder</h1>
+        <div id="element-name">Element: Unknown</div>
+        <div class="nucleus" id="nucleus"></div>
+        <div class="controls">
+            <button onclick="addParticle('proton')">Add Proton</button>
+            <button onclick="addParticle('neutron')">Add Neutron</button>
+            <button onclick="addElectron()">Add Electron</button>
+        </div>
+    </div>
     <script>
+        let protonCount = 0;
+        let neutronCount = 0;
+        let electronCount = 0;
+        const elements = ["Unknown", "Hydrogen", "Helium", "Lithium", "Beryllium", "Boron", "Carbon", "Nitrogen", "Oxygen", "Fluorine", "Neon", "Sodium", "Magnesium", "Aluminum", "Silicon", "Phosphorus", "Sulfur", "Chlorine", "Argon", "Potassium", "Calcium", "Scandium", "Titanium", "Vanadium", "Chromium", "Manganese", "Iron", "Cobalt", "Nickel", "Copper", "Zinc", "Gallium", "Germanium", "Arsenic", "Selenium", "Bromine", "Krypton", "Rubidium", "Strontium", "Yttrium", "Zirconium", "Niobium", "Molybdenum", "Technetium", "Ruthenium", "Rhodium", "Palladium", "Silver", "Cadmium", "Indium", "Tin", "Antimony", "Tellurium", "Iodine", "Xenon", "Cesium", "Barium", "Lanthanum", "Cerium", "Praseodymium", "Neodymium", "Promethium", "Samarium", "Europium", "Gadolinium", "Terbium", "Dysprosium", "Holmium", "Erbium", "Thulium", "Ytterbium", "Lutetium", "Hafnium", "Tantalum", "Tungsten", "Rhenium", "Osmium", "Iridium", "Platinum", "Gold", "Mercury", "Thallium", "Lead", "Bismuth", "Polonium", "Astatine", "Radon", "Francium", "Radium", "Actinium", "Thorium", "Protactinium", "Uranium", "Neptunium", "Plutonium", "Americium", "Curium", "Berkelium", "Californium", "Einsteinium", "Fermium", "Mendelevium", "Nobelium", "Lawrencium", "Rutherfordium", "Dubnium", "Seaborgium", "Bohrium", "Hassium", "Meitnerium", "Darmstadtium", "Roentgenium", "Copernicium", "Nihonium", "Flerovium", "Moscovium", "Livermorium", "Tennessine", "Oganesson"];
+        
         function hideLoading() {
             document.getElementById('loading-screen').style.display = 'none';
-            document.getElementById('canvas-container').style.display = 'block';
-        }
-        setTimeout(hideLoading, 2000);
-    </script>
-    <div id="canvas-container" style="display: none; width: 50%; height: 100vh;"></div>
-    <div class="info-panel" id="info-panel">
-        <h2>Atom Information</h2>
-        <p id="element-name">Element: Gold</p>
-        <p id="atomic-number">Atomic Number: 79</p>
-        <p id="atomic-mass">Atomic Mass: 196.97</p>
-        <p id="element-facts">Facts: Gold is a highly valued metal known for its malleability, conductivity, and resistance to corrosion.</p>
-        <button onclick="addProton()">Add Proton</button>
-        <button onclick="addNeutron()">Add Neutron</button>
-        <button onclick="addElectron()">Add Electron</button>
-        <button onclick="restart()">Restart</button>
-    </div>
-    <div class="trash-can" id="trash-can">🗑</div>
-
-    <script>
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth * 0.5, window.innerHeight);
-        document.getElementById('canvas-container').appendChild(renderer.domElement);
-
-        const nucleus = new THREE.Group();
-        scene.add(nucleus);
-
-        const electrons = [];
-        let protonCount = 0;
-        const elements = ["Unknown", "Hydrogen", "Helium", "Lithium", "Beryllium", "Boron", "Carbon", "Nitrogen", "Oxygen", "Fluorine", "Neon"];
-
-        const protonMaterial = new THREE.MeshStandardMaterial({ color: 'red', emissive: 'red', emissiveIntensity: 3, roughness: 0.3, metalness: 0.8 });
-        const neutronMaterial = new THREE.MeshStandardMaterial({ color: 'blue', emissive: 'blue', emissiveIntensity: 3, roughness: 0.3, metalness: 0.8 });
-        const electronMaterial = new THREE.MeshStandardMaterial({ color: 'green', emissive: 'green', emissiveIntensity: 3, roughness: 0.3, metalness: 0.8 });
-
-        const pointLight = new THREE.PointLight(0xffffff, 1.5, 100);
-        pointLight.position.set(5, 5, 5);
-        scene.add(pointLight);
-
-        const ambientLight = new THREE.AmbientLight(0x404040, 1);
-        scene.add(ambientLight);
-
-        function createSphere(material, position, size = 0.3) {
-            const geometry = new THREE.SphereGeometry(size, 64, 64);
-            const sphere = new THREE.Mesh(geometry, material);
-            sphere.position.set(...position);
-            return sphere;
+            document.getElementById('main-container').style.display = 'flex';
         }
 
-        function addProton() {
-            const proton = createSphere(protonMaterial, [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]);
-            nucleus.add(proton);
-            protonCount++;
-            updateElementName();
-        }
+        function addParticle(type) {
+            const nucleus = document.getElementById('nucleus');
+            if (type === 'proton') {
+                protonCount++;
+                let proton = document.createElement('div');
+                proton.classList.add('particle', 'proton');
+                let angle = (360 / protonCount) * (protonCount - 1);
+                proton.style.transform = `rotate(${angle}deg) translateX(40px)`;
+                nucleus.appendChild(proton);
+            } else if (type === 'neutron') {
+                neutronCount++;
+                let neutron = document.createElement('div');
+                neutron.classList.add('particle', 'neutron');
+                let angle = (360 / neutronCount) * (neutronCount - 1);
+                neutron.style.transform = `rotate(${angle}deg) translateX(40px)`;
+                nucleus.appendChild(neutron);
+            }
 
-        function addNeutron() {
-            const neutron = createSphere(neutronMaterial, [Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]);
-            nucleus.add(neutron);
-        }
-
-        function addElectron() {
-            const electron = createSphere(electronMaterial, [2, 0, 0], 0.15);
-            scene.add(electron);
-            electrons.push({ mesh: electron, angle: Math.random() * Math.PI * 2, radius: 2 + Math.random() });
-        }
-
-        function updateElementName() {
+            // Update element name
             let element = elements[protonCount] || "Unknown";
             document.getElementById('element-name').innerText = `Element: ${element}`;
         }
 
-        function restart() {
-            location.reload();
+        function addElectron() {
+            electronCount++;
+            let electron = document.createElement('div');
+            electron.classList.add('particle', 'electron');
+            let angle = (360 / electronCount) * (electronCount - 1);
+            electron.style.transform = `rotate(${angle}deg) translateX(80px)`;
+            document.getElementById('nucleus').appendChild(electron);
         }
-
-        camera.position.z = 5;
-
-        function animate() {
-            requestAnimationFrame(animate);
-            nucleus.rotation.y += 0.01;
-            nucleus.rotation.x += 0.005;
-            electrons.forEach(e => {
-                e.angle += 0.02;
-                e.mesh.position.x = Math.cos(e.angle) * e.radius;
-                e.mesh.position.z = Math.sin(e.angle) * e.radius;
-            });
-            renderer.render(scene, camera);
-        }
-        animate();
     </script>
 </body>
 </html>
