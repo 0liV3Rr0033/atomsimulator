@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Atom Builder | OA LAB</title>
+    <title>3D Accurate Atom Builder</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        body { margin: 0; overflow: hidden; background: radial-gradient(circle, #000020, #000000); }
+        body { margin: 0; overflow: hidden; background: radial-gradient(circle, #0a0a30, #000010); display: flex; }
         canvas { display: block; }
         .loading-screen {
             position: fixed;
@@ -21,7 +21,8 @@
             flex-direction: column;
             font-size: 24px;
             color: cyan;
-            font-family: Arial, sans-serif;
+            font-family: 'Orbitron', sans-serif;
+            z-index: 10;
         }
         .logo {
             font-size: 50px;
@@ -29,33 +30,31 @@
             text-shadow: 0 0 20px cyan;
             margin-bottom: 20px;
         }
-        .spinner {
+        .info-panel {
+            width: 50%;
+            background: rgba(0, 0, 20, 0.9);
+            color: white;
+            padding: 20px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            overflow-y: auto;
+            font-family: 'Orbitron', sans-serif;
+        }
+        .trash-can {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
             width: 50px;
             height: 50px;
-            border: 5px solid lightgray;
-            border-top: 5px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .controls {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 10;
-            display: none;
-        }
-        .element-name {
-            position: absolute;
-            top: 10px;
-            right: 20px;
+            background: red;
+            text-align: center;
             color: white;
-            font-size: 24px;
-            font-family: Arial, sans-serif;
-            display: none;
+            line-height: 50px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
         }
         button {
             margin: 5px;
@@ -68,34 +67,38 @@
         }
     </style>
 </head>
-<body onload="setTimeout(hideLoading, 2000)">
+<body>
     <div class="loading-screen" id="loading-screen">
         <div class="logo">OA LAB</div>
         <div class="spinner"></div>
     </div>
-    <div class="controls" id="main-container">
+    <script>
+        function hideLoading() {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('canvas-container').style.display = 'block';
+        }
+        setTimeout(hideLoading, 2000);
+    </script>
+    <div id="canvas-container" style="display: none; width: 50%; height: 100vh;"></div>
+    <div class="info-panel" id="info-panel">
+        <h2>Atom Information</h2>
+        <p id="element-name">Element: Gold</p>
+        <p id="atomic-number">Atomic Number: 79</p>
+        <p id="atomic-mass">Atomic Mass: 196.97</p>
+        <p id="element-facts">Facts: Gold is a highly valued metal known for its malleability, conductivity, and resistance to corrosion.</p>
         <button onclick="addProton()">Add Proton</button>
         <button onclick="addNeutron()">Add Neutron</button>
         <button onclick="addElectron()">Add Electron</button>
         <button onclick="restart()">Restart</button>
     </div>
-    <div class="element-name" id="element-name">Element: Unknown</div>
+    <div class="trash-can" id="trash-can">🗑</div>
+
     <script>
-        function hideLoading() {
-            document.getElementById('loading-screen').style.display = 'none';
-            document.getElementById('main-container').style.display = 'block';
-            document.getElementById('element-name').style.display = 'block';
-        }
-
-        function restart() {
-            location.reload();
-        }
-
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
+        renderer.setSize(window.innerWidth * 0.5, window.innerHeight);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
 
         const nucleus = new THREE.Group();
         scene.add(nucleus);
@@ -107,14 +110,14 @@
         const protonMaterial = new THREE.MeshStandardMaterial({ color: 'red', emissive: 'red', emissiveIntensity: 3, roughness: 0.3, metalness: 0.8 });
         const neutronMaterial = new THREE.MeshStandardMaterial({ color: 'blue', emissive: 'blue', emissiveIntensity: 3, roughness: 0.3, metalness: 0.8 });
         const electronMaterial = new THREE.MeshStandardMaterial({ color: 'green', emissive: 'green', emissiveIntensity: 3, roughness: 0.3, metalness: 0.8 });
-        
+
         const pointLight = new THREE.PointLight(0xffffff, 1.5, 100);
         pointLight.position.set(5, 5, 5);
         scene.add(pointLight);
-        
+
         const ambientLight = new THREE.AmbientLight(0x404040, 1);
         scene.add(ambientLight);
-        
+
         function createSphere(material, position, size = 0.3) {
             const geometry = new THREE.SphereGeometry(size, 64, 64);
             const sphere = new THREE.Mesh(geometry, material);
@@ -143,6 +146,10 @@
         function updateElementName() {
             let element = elements[protonCount] || "Unknown";
             document.getElementById('element-name').innerText = `Element: ${element}`;
+        }
+
+        function restart() {
+            location.reload();
         }
 
         camera.position.z = 5;
